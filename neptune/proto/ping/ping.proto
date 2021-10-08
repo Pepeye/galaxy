@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package ping;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// service
+service PingService {
+    rpc Ping(google.protobuf.Empty) returns (Pong);
+}
+
+// messages
+message Pong {
+    string id = 1;
+    string msg = 2;
+    string version =3;
+    DB data = 4;
+    Ts ts = 5;
+}
+
+message DB {
+  string name = 1;
+  string version = 2;
+}
+
+message Ts {
+  google.protobuf.Timestamp created = 1;
+  google.protobuf.Timestamp updated = 2;
+}
