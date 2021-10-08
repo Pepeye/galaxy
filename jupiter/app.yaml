@@ -3,7 +3,7 @@ app:
   host: 0.0.0.0
   port: 50051 
 db:
-  host: 0.0.0.0
+  host: alpha 
   port: 9080
   user: groot
   pass: password

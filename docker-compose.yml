@@ -1,0 +1,53 @@
+# This Docker Compose file can be used to quickly bootup Dgraph Zero
+# and Alpha in different Docker containers.
+
+# It mounts /tmp/data on the host machine to /dgraph within the
+# container. You can change /tmp/data to a more appropriate location.
+# Run `docker-compose up` to start Dgraph.
+
+version: "3.9"
+services:
+    jupiter:
+        build:
+            context: .
+            dockerfile: ./jupiter/Dockerfile
+        restart: always
+        depends_on:
+            - alpha
+        ports:
+            - 50051:50051
+        # volumes:
+            # - $PWD/jupiter/.env:/.env
+    
+    # Dgraph zero - cordinates cluster
+    zero:
+        image: dgraph/dgraph:latest
+        # volumes:
+            # - ~/Labs/data/dgraph/data:/dgraph
+        ports:
+            - 5080:5080
+            - 6080:6080
+        restart: on-failure
+        command: dgraph zero --my=zero:5080
+    
+    # Dgraph - alpha database server nodes
+    alpha:
+        image: dgraph/dgraph:latest
+        depends_on:
+            - zero
+        # volumes:
+            # - /Labs/data/dgraph/data:/dgraph
+        ports:
+            - 8080:8080
+            - 9080:9080
+        restart: on-failure
+        command: dgraph alpha --security whitelist=0.0.0.0/0 --my=alpha:7080 --zero=zero:5080 
+    
+    # Dgraph ui
+    ratel:
+        image: dgraph/ratel:latest
+        depends_on:
+            - zero
+        ports:
+            - 8000:8000
+        command: dgraph-ratel
