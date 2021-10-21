@@ -7,3 +7,6 @@ db:
   port: 9080
   user: groot
   pass: password
+telemetry:
+  host: jaeger
+  port: 6831

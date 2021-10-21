@@ -1,3 +1,6 @@
+use opentelemetry::global;
+use opentelemetry::sdk::propagation::TraceContextPropagator;
+use opentelemetry::sdk::trace::{self, Sampler};
 use tracing::{subscriber::set_global_default, Subscriber};
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
@@ -20,11 +23,29 @@ pub fn get_subscriber(
     name: String,
     env_filter: String,
     sink: impl MakeWriter + Send + Sync + 'static,
+    tracing_endpoint: String,
 ) -> impl Subscriber + Send + Sync {
     let env_filter =
         EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter));
 
-    let formatting_layer = BunyanFormattingLayer::new(name, sink);
+    let formatting_layer = BunyanFormattingLayer::new(name.clone(), sink);
+
+    // global::set_text_map_propagator(opentelemetry_jaeger::Propagator::new());
+    global::set_text_map_propagator(TraceContextPropagator::new());
+
+    // Install an otel pipeline with a simple span processor that exports data one at a time when
+    // spans end. See the `install_batch` option on each exporter's pipeline builder to see how to
+    // export in batches.
+    let tracer = opentelemetry_jaeger::new_pipeline()
+        .with_service_name(name)
+        .with_trace_config(trace::config().with_sampler(Sampler::AlwaysOn))
+        .with_agent_endpoint(tracing_endpoint)
+        .with_max_packet_size(65000)
+        // .with_auto_split_batch(true)
+        .install_batch(opentelemetry::runtime::Tokio)
+        .expect("Unable to build Jaeger pipeline");
+
+    let opentelemetry = tracing_opentelemetry::layer().with_tracer(tracer);
 
     // The `with` method is provided by `SubscriberExt`, an extension
     // trait for `Subscriber` exposed by `tracing_subscriber`
@@ -32,6 +53,7 @@ pub fn get_subscriber(
         .with(env_filter)
         .with(JsonStorageLayer)
         .with(formatting_layer)
+        .with(opentelemetry)
 }
 
 /// Register a subscriber as global default to process span data.

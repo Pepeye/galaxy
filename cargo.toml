@@ -1,3 +1,2 @@
 [workspace]
-
 members = [ "neptune", "jupiter" ]

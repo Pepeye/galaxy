@@ -8,6 +8,7 @@ use tracing::{info, instrument};
 pub struct Configuration {
     pub app: AppSettings,
     pub db: DatabaseSettings,
+    pub telemetry: TelemetrySettings,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -23,6 +24,12 @@ pub struct DatabaseSettings {
     pub port: i32,
     pub user: String,
     pub pass: String,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct TelemetrySettings {
+    pub host: String,
+    pub port: i32,
 }
 
 impl Configuration {
