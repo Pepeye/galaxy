@@ -5,5 +5,9 @@ proto_library(
     srcs = [
         "ping/ping.proto",
     ],
+    deps = [
+      "@com_google_protobuf//:empty_proto",
+      "@com_google_protobuf//:timestamp_proto",
+    ],
     visibility = ["//visibility:public"],
 )
