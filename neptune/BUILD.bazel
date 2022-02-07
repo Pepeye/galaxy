@@ -1,0 +1,18 @@
+load("@rules_rust//cargo:cargo_build_script.bzl", "cargo_build_script")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+load("@crates//:defs.bzl", "build_crates_from", "crates_from")
+
+cargo_build_script(
+    name = "build",
+    srcs = ["build.rs"],
+    deps = build_crates_from("//neptune:Cargo.toml"),
+)
+
+# package(default_visibility = ["//visibility:public"])
+rust_library(
+    name = "neptune",
+    srcs = glob(["src/**/*.rs"]),
+		visibility = ["//visibility:public"],
+    deps = crates_from("//neptune:Cargo.toml") + [":build"]
+)
