@@ -3,9 +3,8 @@ name = "jupiter"
 version = "0.1.0"
 edition = "2018"
 
-# [lib]
-# name = "jupiter"
-# path = "src/lib.rs"
+[lib]
+path = "src/lib.rs"
 
 [[bin]]
 name = "jupiter"
