@@ -3,9 +3,10 @@ load("@rules_rust//rust:defs.bzl", "rust_binary")
 
 rust_binary(
     name = "jupiter",
-    srcs = [
-			"src/main.rs"
-		],
+    srcs = glob(["src/**/*.rs"]),
+  #   srcs = [
+		# 	"src/main.rs"
+		# ],
 		visibility = ["//visibility:public"],
     deps = crates_from("//jupiter:Cargo.toml") + ["//neptune"],
 )

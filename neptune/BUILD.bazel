@@ -1,18 +1,40 @@
 load("@rules_rust//cargo:cargo_build_script.bzl", "cargo_build_script")
 load("@rules_rust//rust:defs.bzl", "rust_library")
 
-load("@crates//:defs.bzl", "build_crates_from", "crates_from")
+load("@crates//:defs.bzl", "build_crates_from", "crates_from", "crate")
+
+rust_library(
+    name = "neptune",
+    srcs = glob(["src/**/*.rs"]),
+    # src = [ "lib.rs" ],
+		visibility = ["//visibility:public"],
+    deps = crates_from("//neptune:Cargo.toml") + [":build"]
+)
+
+alias(
+    name = "rustfmt",
+    actual = select({
+        "@rules_rust//rust/platform:osx": "@rust_darwin_x86_64//:rustfmt_bin",
+        "@rules_rust//rust/platform:linux": "@rust_linux_x86_64//:rustfmt_bin",
+    }),
+)
 
 cargo_build_script(
     name = "build",
     srcs = ["build.rs"],
-    deps = build_crates_from("//neptune:Cargo.toml"),
+    # deps = build_crates_from("//neptune:Cargo.toml"),
+    deps = [
+        crate("tonic-build"),
+    ],
+    build_script_env = {
+        "RUSTFMT": "$(execpath :rustfmt)",
+        "PROTOC": "$(execpath @com_google_protobuf//:protoc)"
+    },
+    data = [
+      "//neptune:proto",
+      ":rustfmt",
+      "@com_google_protobuf//:protoc",
+    ],
 )
 
 # package(default_visibility = ["//visibility:public"])
-rust_library(
-    name = "neptune",
-    srcs = glob(["src/**/*.rs"]),
-		visibility = ["//visibility:public"],
-    deps = crates_from("//neptune:Cargo.toml") + [":build"]
-)
