@@ -3,20 +3,20 @@ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library")
 
 # rust service used as a library and bin
 rust_library(
-    name = "jupiter_lib",
-    # srcs = glob(["src/**/*.rs"]),
-    srcs = [ "src/lib.rs" ],
+    name = "jupiter",
+    srcs = glob(["src/**/*.rs"]),
+    # srcs = [ "src/lib.rs" ],
 		visibility = ["//visibility:public"],
     deps = crates_from("//jupiter:Cargo.toml") + ["//neptune"],
 )
 
 
 rust_binary(
-    name = "jupiter",
+    name = "app",
     srcs = [ "src/main.rs" ],
 		visibility = ["//visibility:public"],
     # deps = ["@sekai//jupiter"],
-    deps = [
-      ":jupiter_lib"
+    deps = crates_from("//jupiter:Cargo.toml") + [
+      "//jupiter"
     ]
 )
