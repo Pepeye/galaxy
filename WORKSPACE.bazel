@@ -33,6 +33,7 @@ RUST_VERSION = "1.58.1"
 rust_repositories(
     edition = "2021",
     version = RUST_VERSION,
+    include_rustc_srcs = True,
 )
 
 
@@ -41,47 +42,6 @@ rust_repositories(
 load("@rules_rust//tools/rust_analyzer:deps.bzl", "rust_analyzer_deps")
 
 rust_analyzer_deps()
-
-
-### <crate-universe> ###
-
-load("@rules_rust//crate_universe:defs.bzl", "crate_universe")
-
-crate_universe(
-    name = "crates",
-    cargo_toml_files = [
-        "//neptune:Cargo.toml",
-        "//jupiter:Cargo.toml",
-    ],
-    resolver_download_url_template = "https://github.com/bazelbuild/rules_rust/releases/download/crate_universe-13/crate_universe_resolver-{host_triple}{extension}"
-    resolver_sha256s = {
-        "aarch64-apple-darwin": "c6017cd8a4fee0f1796a8db184e9d64445dd340b7f48a65130d7ee61b97051b4",
-        "aarch64-unknown-linux-gnu": "d0a310b03b8147e234e44f6a93e8478c260a7c330e5b35515336e7dd67150f35",
-        "x86_64-apple-darwin": "762f1c77b3cf1de8e84d7471442af1314157efd90720c7e1f2fff68556830ee2",
-        "x86_64-pc-windows-gnu": "c44bd97373d690587e74448b13267077d133f04e89bedfc9d521ae8ba55dddb9",
-        "x86_64-unknown-linux-gnu": "aebf51af6a3dd33fdac463b35b0c3f4c47ab93e052099199673289e2025e5824",
-    }
-    # leave unset for default multi-platform support
-    supported_targets = [
-        "x86_64-apple-darwin",
-        "x86_64-unknown-linux-gnu",
-    ],
-    # [package.metadata.raze.xxx] lines in Cargo.toml files are ignored;
-    # the overrides need to be declared in the repo rule instead.
-    # overrides = {
-    #     "example-sys": crate.override(
-    #         extra_build_script_env_vars = {"PATH": "/usr/bin"},
-    #     ),
-    # },
-    # to use a lockfile, uncomment the following line,
-    # create an empty file in the location, and then build
-    # with REPIN=1 bazel build ...
-    lockfile = "//:crate_universe.lock",
-)
-
-load("@crates//:defs.bzl", "pinned_rust_install")
-
-pinned_rust_install()
 
 
 #### <rules_proto> ###
@@ -99,3 +59,44 @@ http_archive(
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies")
 
 rules_proto_dependencies()
+
+
+### <crate-universe> ###
+
+load("@rules_rust//crate_universe:defs.bzl", "crate_universe")
+
+crate_universe(
+    name = "crates",
+    cargo_toml_files = [
+        "//neptune:Cargo.toml",
+        "//jupiter:Cargo.toml",
+    ],
+    resolver_download_url_template = "https://github.com/bazelbuild/rules_rust/releases/download/crate_universe-13/crate_universe_resolver-{host_triple}{extension}",
+    resolver_sha256s = {
+        "aarch64-apple-darwin": "c6017cd8a4fee0f1796a8db184e9d64445dd340b7f48a65130d7ee61b97051b4",
+        "aarch64-unknown-linux-gnu": "d0a310b03b8147e234e44f6a93e8478c260a7c330e5b35515336e7dd67150f35",
+        "x86_64-apple-darwin": "762f1c77b3cf1de8e84d7471442af1314157efd90720c7e1f2fff68556830ee2",
+        "x86_64-pc-windows-gnu": "c44bd97373d690587e74448b13267077d133f04e89bedfc9d521ae8ba55dddb9",
+        "x86_64-unknown-linux-gnu": "aebf51af6a3dd33fdac463b35b0c3f4c47ab93e052099199673289e2025e5824",
+    },
+    # leave unset for default multi-platform support
+    supported_targets = [
+        "x86_64-apple-darwin",
+        "x86_64-unknown-linux-gnu",
+    ],
+    # [package.metadata.raze.xxx] lines in Cargo.toml files are ignored;
+    # the overrides need to be declared in the repo rule instead.
+    # overrides = {
+    #     "example-sys": crate.override(
+    #         extra_build_script_env_vars = {"PATH": "/usr/bin"},
+    #     ),
+    # },
+    # to use a lockfile, uncomment the following line,
+    # create an empty file in the location, and then build
+    # with REPIN=1 bazel build ...
+    # lockfile = "//:crate_universe.lock",
+)
+
+load("@crates//:defs.bzl", "pinned_rust_install")
+
+pinned_rust_install()
