@@ -1,0 +1,13 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+proto_library(
+    name = "proto",
+    # srcs = glob(["**/*.proto"]),
+    srcs = [
+        "ping/ping.proto",
+    ],
+    deps = [
+      "@com_google_protobuf//:empty_proto",
+      "@com_google_protobuf//:timestamp_proto",
+    ],
+    visibility = ["//visibility:public"],
+)

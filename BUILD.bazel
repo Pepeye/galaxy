@@ -1,0 +1,11 @@
+load("@rules_rust//rust:defs.bzl", "rust_analyzer", "rust_clippy")
+
+rust_analyzer(
+    name = "rust_analyzer",
+    # targets = glob(["src/**/*.rs"]),
+    targets = [
+        "//neptune",
+        "//jupiter",
+    ],
+)
+
