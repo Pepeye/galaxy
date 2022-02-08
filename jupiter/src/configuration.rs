@@ -43,7 +43,7 @@ impl Configuration {
         let mut c = Config::default();
 
         // Add configuration values from a file named `app`.
-        c.merge(config::File::with_name("jupiter/app"))?;
+        c.merge(config::File::with_name("app"))?;
 
         // Read config from .env variable
         // c.merge(Environment::default())?;

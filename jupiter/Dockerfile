@@ -12,7 +12,7 @@ COPY /neptune ../neptune
 RUN cargo build --release
 
 FROM gcr.io/distroless/cc
-COPY --from=builder /app/target/release/jupiter /
+COPY --from=builder /app/target/release/app /
 COPY --from=builder /app/app.yaml /
 EXPOSE 50051 
-CMD ["./jupiter"]
+CMD ["./app"]
